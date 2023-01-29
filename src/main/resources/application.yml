@@ -1,0 +1,19 @@
+spring:
+application:
+name: agenda
+version: 1.0.0
+author:
+name: Pedro Carara
+email : cararax@gmail.com
+
+server:
+port: 8082
+
+feign:
+config:
+associates:
+name: associates
+url: http://localhost:8080/associates
+agenda:
+name: agendas
+url: http://localhost:8081/agendas
