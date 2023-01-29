@@ -1,19 +1,18 @@
 spring:
-application:
-name: agenda
-version: 1.0.0
-author:
-name: Pedro Carara
-email : cararax@gmail.com
-
+  application:
+    name: result
+    version: 1.0.0
+    author:
+      name: Pedro Carara
+      email: cararax@gmail.com
 server:
-port: 8082
+  port: 8083
 
-feign:
-config:
-associates:
-name: associates
-url: http://localhost:8080/associates
-agenda:
-name: agendas
-url: http://localhost:8081/agendas
+rabbitmq:
+  host: localhost
+  port: '15672'
+  username: guest
+  password: guest
+  exchange: vote.exchange
+  queue: vote.queue
+  routingkey: vote.routingkey
