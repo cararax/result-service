@@ -20,17 +20,17 @@ public class VoteListener {
     private RabbitTemplate template;
 
     @Autowired
-    private DirectExchange exchange;
+    private DirectExchange voteExchange;
 
-    @Value("${rabbitmq.routingkey}")
-    private String routingKey;
+    @Value("${rabbitmq.vote.routingkey}")
+    private String voteRoutingKey;
 
     ObjectMapper newObjectMapper = new ObjectMapper();
 
     public void listen(Long agendaId) throws JsonProcessingException {
         log.info(" [x] Requesting result for " + agendaId);
 
-        String reponse = (String) template.convertSendAndReceive(exchange.getName(), routingKey, agendaId);
+        String reponse = (String) template.convertSendAndReceive(voteExchange.getName(), voteRoutingKey, agendaId);
         List<Vote> voteList= newObjectMapper.readValue(reponse, List.class);
 
         log.info(" [.] Returned " + voteList);

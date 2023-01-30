@@ -13,6 +13,14 @@ rabbitmq:
   port: '15672'
   username: guest
   password: guest
-  exchange: vote.exchange
-  queue: vote.queue
-  routingkey: vote.routingkey
+
+  vote:
+    exchange: vote.exchange
+    queue: vote.queue
+    routingkey: vote.routingkey
+
+  result:
+    exchange: result.exchange
+    queue: result.queue
+    routingkey: result.routingkey
+

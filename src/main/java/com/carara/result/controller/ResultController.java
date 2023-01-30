@@ -1,6 +1,6 @@
 package com.carara.result.controller;
 
-import com.carara.result.infra.message.ResultListener;
+import com.carara.result.infra.message.VoteListener;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/results")
 @AllArgsConstructor
 public class ResultController {
-    ResultListener resultListener;
+    VoteListener resultListener;
 
     @GetMapping("/{agendaId}")
 
