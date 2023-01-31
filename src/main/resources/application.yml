@@ -5,6 +5,20 @@ spring:
     author:
       name: Pedro Carara
       email: cararax@gmail.com
+
+  datasource:
+    username: user
+    password: password
+    url: jdbc:postgresql://localhost:5432/
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
 server:
   port: 8083
 
