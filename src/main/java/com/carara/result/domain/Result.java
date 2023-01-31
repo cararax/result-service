@@ -1,6 +1,8 @@
 package com.carara.result.domain;
 
+import com.carara.result.infra.message.response.VoteOption;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -9,7 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
@@ -27,6 +29,13 @@ public class Result {
     @Positive
     @Column(name = "agendaId", unique = true, nullable = false)
     private Long agendaId;
+
+    @NotNull
+    @Column(name = "winner", nullable = false)
+    private Winner winner;
+
+// todo: adicionar em um dto
+//    private List<VoteScore> voteScore = new ArrayList<>();
 
     @NotNull
     public boolean equals(Object o) {

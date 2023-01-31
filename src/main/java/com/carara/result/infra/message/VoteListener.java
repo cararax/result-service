@@ -3,12 +3,13 @@ package com.carara.result.infra.message;
 import com.carara.result.infra.message.response.Vote;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -25,14 +26,21 @@ public class VoteListener {
     @Value("${rabbitmq.vote.routingkey}")
     private String voteRoutingKey;
 
-    ObjectMapper newObjectMapper = new ObjectMapper();
 
-    public void listen(Long agendaId) throws JsonProcessingException {
-        log.info(" [x] Requesting result for " + agendaId);
+    ObjectMapper newObjectMapper = JsonMapper.builder()
+            .addModule(new JavaTimeModule())
+            .build();
+
+    public String listen(Long agendaId) throws JsonProcessingException {
+        log.info(" [x] Requesting votes from result, agenda " + agendaId);
 
         String reponse = (String) template.convertSendAndReceive(voteExchange.getName(), voteRoutingKey, agendaId);
-        List<Vote> voteList= newObjectMapper.readValue(reponse, List.class);
+//        String json = newObjectMapper.writeValueAsString(reponse);
 
-        log.info(" [.] Returned " + voteList);
+
+
+        log.info(" [x] Returning response from result, agenda " + agendaId);
+        return reponse;
+
     }
 }
