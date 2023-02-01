@@ -15,13 +15,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
-//@Table(name = "vote", uniqueConstraints = {
-//        @UniqueConstraint(columnNames = {"id", "associateId", "agendaId"})})
+@Table(name = "vote", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"id", "associateId", "agendaId"})})
 public class Vote implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

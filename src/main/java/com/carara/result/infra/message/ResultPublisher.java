@@ -8,17 +8,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.AmqpIllegalStateException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Slf4j
+@Log4j2(topic = "ResultPublisher")
 public class ResultPublisher {
-//SERVER
-
     @Autowired
     ResultService resultService;
 
@@ -31,14 +29,12 @@ public class ResultPublisher {
 
     @RabbitListener(queues = "${rabbitmq.result.queue}")
     public String publish(Long agendaId) throws JsonProcessingException {
-        log.info(" [2] Received request for agenda "+ agendaId);
-
+        log.info("Loading votes for agenda " + agendaId);
         String response = voteListener.listen(agendaId);
-        //todo: verificar se a lista está vazia
         if (response == null) {
+            log.error("Impossible to get votes for agenda " + agendaId);
             throw new AmqpIllegalStateException("Impossible to get votes, try again later.");
         }
-        //todo: atenção na desserialização
         List<Vote> voteList = newObjectMapper.readValue(response, new TypeReference<List<Vote>>() {
         });
 
@@ -46,13 +42,10 @@ public class ResultPublisher {
 
         String json = newObjectMapper.writeValueAsString(result);
         if (json == null) {
+            log.error("Votes not found for agenda: " + agendaId);
             throw new AmqpIllegalStateException("Impossible to get votes, try again later.");
         }
-        //todo: calculate result
-        //todo:return result
-        //todo: save result
-
-        log.info(" [7] Returned result for agenda "+agendaId +", data: " + json);
+        log.info("Returned result for agenda " + agendaId + ", result: " + json);
         return json;
     }
 }
