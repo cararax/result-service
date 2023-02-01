@@ -2,11 +2,10 @@ package com.carara.result.service;
 
 import com.carara.result.domain.Result;
 import com.carara.result.domain.Winner;
-import com.carara.result.infra.message.ResultPublisher;
 import com.carara.result.infra.message.response.Vote;
 import com.carara.result.infra.message.response.VoteOption;
 import com.carara.result.infra.repository.ResultRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,21 +19,14 @@ import java.util.stream.Collectors;
 public class ResultService {
 
     ResultRepository resultRepository;
-    ResultPublisher resultPublisher;
 
-    public Result calculateResult(Long agendaId) throws JsonProcessingException {
-        Optional<Result> resultByAgendaId = resultRepository.findByAgendaId(agendaId);
-        if (resultByAgendaId.isPresent()) {
-            return resultByAgendaId.get();
+    public Result findById(Long id) {
+        Optional<Result> resultOptional = resultRepository.findById(id);
+        if (resultOptional.isPresent()) {
+            return resultOptional.get();
         }
-        resultPublisher.publish(agendaId);
-        resultByAgendaId = resultRepository.findByAgendaId(agendaId);
-        if (resultByAgendaId.isPresent()) {
-            return resultByAgendaId.get();
-        }
-        throw new RuntimeException("Error processing result, try again later");
+        throw new EntityNotFoundException("Result not found for id: " + id);
     }
-
 
     public Result calculateResult(List<Vote> voteList) {
         if (voteList.isEmpty()) {
@@ -50,8 +42,8 @@ public class ResultService {
         Map<VoteOption, Long> scoreOfVotes = voteList.stream()
                 .collect(Collectors.groupingBy(Vote::getVoteOption, Collectors.counting()));
 
-        Long yesVotes = scoreOfVotes.get(VoteOption.YES);
-        Long noVotes = scoreOfVotes.get(VoteOption.NO);
+        Long yesVotes = scoreOfVotes.getOrDefault(VoteOption.YES, 0L);
+        Long noVotes = scoreOfVotes.getOrDefault(VoteOption.NO, 0L);
 
         Result result = new Result();
 
