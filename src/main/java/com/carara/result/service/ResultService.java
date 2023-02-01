@@ -20,6 +20,9 @@ public class ResultService {
     ResultRepository resultRepository;
 
     public Result calculateResult(List<Vote> voteList) {
+        if (voteList.isEmpty()) {
+            throw new IllegalArgumentException("Vote list is empty");
+        }
 
         Long agendaId = voteList.get(0).getAgendaId();
         Optional<Result> resultByAgenda = resultRepository.findByAgendaId(agendaId);

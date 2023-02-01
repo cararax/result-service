@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpIllegalStateException;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +33,17 @@ public class VoteListener {
             .build();
 
     public String listen(Long agendaId) throws JsonProcessingException {
-        log.info(" [x] Requesting votes from result, agenda " + agendaId);
+        log.info(" [3] Requesting votes from result, agenda " + agendaId);
 
-        String reponse = (String) template.convertSendAndReceive(voteExchange.getName(), voteRoutingKey, agendaId);
+        String response = (String) template.convertSendAndReceive(voteExchange.getName(), voteRoutingKey, agendaId);
+        if (response == null) {
+            throw new AmqpIllegalStateException("Impossible to get votes, try again later.");
+        }
 //        String json = newObjectMapper.writeValueAsString(reponse);
 
 
-
-        log.info(" [x] Returning response from result, agenda " + agendaId);
-        return reponse;
+        log.info(" [6] Returning response from result, agenda " + agendaId + ", data: " + response);
+        return response;
 
     }
 }
